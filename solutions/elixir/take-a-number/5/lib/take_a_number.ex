@@ -1,0 +1,19 @@
+defmodule TakeANumber do
+  @spec start() :: pid()
+  def start(), do: spawn(fn -> proc(0) end)
+
+  @spec proc(integer()) :: nil
+  defp proc(state) do
+    receive do
+      {:report_state, pid} -> 
+          send(pid, state)
+          proc(state)
+      {:take_a_number, pid} -> 
+          new_state = state + 1
+          send(pid, new_state)
+          proc(new_state)
+      :stop -> nil
+      _ -> proc(state)
+    end
+  end
+end
